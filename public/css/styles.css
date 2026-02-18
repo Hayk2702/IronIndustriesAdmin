@@ -1,0 +1,417 @@
+.close {
+    background: transparent;
+}
+.addButton  {
+    color: white !important;
+}
+
+
+/* ===== Vue-Multiselect global overrides ===== */
+.multiselect { font-family: inherit; }
+
+.multiselect__tags {
+    border-radius: 12px !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+    background: rgba(255,255,255,.05) !important;
+    min-height: 42px !important;
+    padding: 8px 10px !important;
+}
+
+.multiselect__single,
+.multiselect__input {
+    color: rgba(255,255,255,.92) !important;
+    background: transparent !important;
+}
+
+.multiselect__placeholder {
+    color: rgba(255,255,255,.45) !important;
+}
+
+.multiselect__content-wrapper {
+    border-radius: 14px !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+    background: rgba(10, 14, 30, .98) !important;
+    box-shadow: 0 18px 50px rgba(0,0,0,.45) !important;
+    overflow: hidden;
+}
+
+.multiselect__option {
+    color: rgba(255,255,255,.85) !important;
+    background: transparent !important;
+    padding: 10px 12px !important;
+}
+
+.multiselect__option--highlight {
+    background: rgba(124,58,237,.22) !important;
+    color: rgba(255,255,255,.95) !important;
+}
+
+.multiselect__option--selected {
+    background: rgba(6,182,212,.16) !important;
+    color: rgba(255,255,255,.95) !important;
+}
+
+.multiselect__option--selected.multiselect__option--highlight {
+    background: rgba(6,182,212,.24) !important;
+}
+
+/* Fix right “Select/Selected” badge text */
+.multiselect__option span {
+    color: inherit !important;
+}
+
+.multiselect__option::after {
+    background: rgba(124,58,237,.18) !important;
+    color: rgba(255,255,255,.92) !important;
+    border-left: 1px solid rgba(255,255,255,.08) !important;
+}
+
+.multiselect__option--selected::after {
+    background: rgba(6,182,212,.20) !important;
+    color: rgba(255,255,255,.95) !important;
+}
+
+.multiselect__select::before {
+    border-color: rgba(255,255,255,.65) transparent transparent transparent !important;
+}
+
+.multiselect--active .multiselect__tags {
+    box-shadow: 0 0 0 4px rgba(124,58,237,.18) !important;
+    border-color: rgba(124,58,237,.45) !important;
+}
+
+/* ===== Global table / modal / inputs styles (BootstrapVue) ===== */
+.table { margin-bottom: 0 !important; color: rgb(25, 28, 37) !important; }
+
+.table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-color: rgba(255,255,255,.08) !important;
+    color: rgba(255,255,255,.82) !important;
+    font-weight: 900;
+    letter-spacing: .25px;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.table td,
+.table th {
+    /*border-color: rgba(255,255,255,.08) !important;*/
+    border: none;
+    vertical-align: middle !important;
+}
+
+tbody,
+tfoot,
+tr,
+td,
+th {
+    border-color: #2b2545;
+    border-style: solid;
+    border-width: 0;
+}
+
+.card{
+    border: none !important;
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)) !important;
+    box-shadow: var(--shadow) !important;
+    overflow: hidden;
+}
+.table tbody tr { transition: background .15s ease; }
+
+/*.table-striped > tbody > tr:nth-of-type(odd){*/
+/*    background: rgba(255,255,255,.03) !important;*/
+/*}*/
+/*.table-striped > tbody > tr:nth-of-type(even){*/
+/*    background: rgba(255,255,255,.01) !important;*/
+/*}*/
+
+.table-striped > tbody > tr > td{
+    background: transparent !important;
+    color: white !important;
+}
+.table-hover tbody tr:hover {
+    background: rgba(255,255,255,.05) !important;
+}
+
+/* Modal */
+.modal-content {
+    border-radius: 18px !important;
+    border: 1px solid rgba(255,255,255,.11) !important;
+    background: rgba(15, 22, 48, .92) !important;
+    color: rgba(255,255,255,.92) !important;
+    box-shadow: 0 22px 60px rgba(0,0,0,.45) !important;
+}
+
+.modal-header,
+.modal-footer {
+    border-color: rgba(255,255,255,.08) !important;
+}
+
+/* Inputs */
+.form-control {
+    border-radius: 12px !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+    background: rgba(255,255,255,.05) !important;
+    color: rgba(255,255,255,.92) !important;
+}
+
+.form-control::placeholder {
+    color: rgba(255,255,255,.45) !important;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 4px rgba(124,58,237,.18) !important;
+    border-color: rgba(124,58,237,.45) !important;
+}
+
+/* Errors */
+.error-border { border-color: rgba(255, 90, 106, .55) !important; }
+
+.error-msg {
+    display: block;
+    margin-top: 6px;
+    color: rgba(255, 90, 106, .95);
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.page{
+    --border: rgba(255,255,255,.11);
+    --text: rgba(255,255,255,.92);
+    --muted: rgba(255,255,255,.62);
+    --shadow: 0 22px 60px rgba(0,0,0,.45);
+    --r: 18px;
+
+    padding: 14px;
+    color: var(--text);
+}
+
+.parent_card_pagination{
+    margin-top: 12px;
+}
+
+/* top actions row */
+.table_navigate{
+    gap:10px;
+    align-items:center;
+}
+
+/* buttons animation (missing transitions) */
+.toggleTableBtm,
+.addButton{
+    border-radius:12px !important;
+    padding:8px 10px !important;
+    transition:
+        transform .15s ease,
+        background .15s ease,
+        border-color .15s ease;
+}
+
+.toggleTableBtm:hover,
+.addButton:hover{
+    transform: translateY(-1px);
+}
+
+/* label style */
+.lbl{
+    display:block;
+    font-size:12px;
+    font-weight:900;
+    color: var(--muted);
+    margin-bottom:6px;
+}
+
+/* file input */
+.fileInput{
+    width:100%;
+    padding:10px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.04);
+    color: rgba(255,255,255,.85);
+}
+
+/* thumbnails */
+.thumbs{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+.thumb{
+    width:28px;
+    height:28px;
+    object-fit:cover;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,.12);
+}
+
+.more{
+    font-size:12px;
+    color: rgba(255,255,255,.6);
+}
+
+.muted{
+    color: rgba(255,255,255,.55);
+}
+
+/* preview grid */
+.previewGrid{
+    margin-top:10px;
+    display:grid;
+    grid-template-columns: repeat(auto-fill,minmax(120px,1fr));
+    gap:10px;
+}
+
+.previewItem{
+    position:relative;
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:14px;
+    overflow:hidden;
+    background: rgba(255,255,255,.03);
+}
+
+.previewItem img{
+    width:100%;
+    height:110px;
+    object-fit:cover;
+    display:block;
+}
+
+.xBtn{
+    position:absolute;
+    top:6px;
+    right:6px;
+    width:28px;
+    height:28px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,.15);
+    background: rgba(0,0,0,.45);
+    color:white;
+    font-size:18px;
+    line-height:1;
+}
+
+/* CKEditor dark theme */
+.ck.ck-editor__main{
+    background: transparent !important;
+}
+
+.ck-editor__editable{
+    min-height:220px;
+    background: rgba(15,22,48,.95) !important;
+    color: rgba(255,255,255,.92) !important;
+    border-radius:12px !important;
+}
+
+.ck-toolbar{
+    background: rgba(20,28,60,.95) !important;
+    border:1px solid rgba(255,255,255,.12) !important;
+    border-radius:12px 12px 0 0 !important;
+}
+
+/* loading overlay */
+.loading-overflow{
+    position:fixed;
+    inset:0;
+    background: rgba(0,0,0,.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index:9999;
+    display:grid;
+    place-items:center;
+}
+
+/* mobile */
+@media (max-width:768px){
+    .table_navigate{
+        flex-wrap:wrap;
+        justify-content:flex-start !important;
+    }
+}
+
+/* ===============================
+   SWEETALERT2 GLOBAL STYLE
+================================ */
+
+/* popup container */
+.swal2-popup {
+    border-radius: 18px !important;
+    background: rgba(15, 22, 48, .95) !important;
+    color: rgba(255,255,255,.92) !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+    box-shadow: 0 22px 60px rgba(0,0,0,.45) !important;
+    backdrop-filter: blur(10px);
+}
+
+/* title */
+.swal2-title {
+    font-weight: 900 !important;
+    color: white !important;
+}
+
+/* text */
+.swal2-html-container {
+    color: rgba(255,255,255,.75) !important;
+    font-size: 14px;
+}
+
+/* buttons container */
+.swal2-actions {
+    gap: 10px;
+}
+
+/* confirm button */
+.swal2-confirm {
+    background: linear-gradient(
+        135deg,
+        #7c3aed,
+        #06b6d4
+    ) !important;
+
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 8px 18px !important;
+    font-weight: 700 !important;
+
+    transition: transform .15s ease, box-shadow .15s ease !important;
+}
+
+.swal2-confirm:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px rgba(124,58,237,.4);
+}
+
+/* cancel button */
+.swal2-cancel {
+    background: rgba(255,255,255,.06) !important;
+    border: 1px solid rgba(255,255,255,.15) !important;
+    color: white !important;
+    border-radius: 12px !important;
+}
+
+/* icon glow */
+.swal2-icon.swal2-success {
+    border-color: #06b6d4 !important;
+    color: #06b6d4 !important;
+}
+
+.swal2-icon.swal2-error {
+    border-color: #ff5a6a !important;
+    color: #ff5a6a !important;
+}
+
+.swal2-icon.swal2-warning {
+    border-color: #f59e0b !important;
+    color: #f59e0b !important;
+}
+
+/* backdrop */
+.swal2-backdrop-show {
+    background: rgba(0,0,0,.65) !important;
+    backdrop-filter: blur(4px);
+}
