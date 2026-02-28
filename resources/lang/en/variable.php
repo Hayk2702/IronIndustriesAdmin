@@ -232,6 +232,18 @@ return [
     'service' => 'Service',
     'services' => 'Services',
     'images' => 'Images',
+
+    /*
+|--------------------------------------------------------------------------
+| Category fields
+|--------------------------------------------------------------------------
+*/
+
+    'category' => 'Category',
+    'categories' => 'Categories',
+    'select_category' => 'Select category',
+    'slug' => 'Slug',
+
     /*
 |--------------------------------------------------------------------------
 | Products fields

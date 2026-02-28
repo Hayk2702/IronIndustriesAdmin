@@ -91,20 +91,38 @@ class Permissions extends Seeder
 
 
             [
-                'name' => 'Show Permissions',
+                'name' => 'Show Services',
                 'slug' => 'showservices'
             ],
             [
-                'name' => 'Create Permissions',
+                'name' => 'Create Services',
                 'slug' => 'createservices'
             ],
             [
-                'name' => 'Edit Permissions',
+                'name' => 'Edit Services',
                 'slug' => 'editservices'
             ],
             [
-                'name' => 'Delete Permissions',
+                'name' => 'Delete Services',
                 'slug' => 'deleteservices'
+            ],
+
+
+            [
+                'name' => 'Show Categories',
+                'slug' => 'showcategories'
+            ],
+            [
+                'name' => 'Create Categories',
+                'slug' => 'createcategories'
+            ],
+            [
+                'name' => 'Edit Categories',
+                'slug' => 'editcategories'
+            ],
+            [
+                'name' => 'Delete Categories',
+                'slug' => 'deletecategories'
             ],
 
 
@@ -113,15 +131,15 @@ class Permissions extends Seeder
                 'slug' => 'showproducts'
             ],
             [
-                'name' => 'Create Permissions',
+                'name' => 'Create Products',
                 'slug' => 'createproducts'
             ],
             [
-                'name' => 'Edit Permissions',
+                'name' => 'Edit Products',
                 'slug' => 'editproducts'
             ],
             [
-                'name' => 'Delete Permissions',
+                'name' => 'Delete Products',
                 'slug' => 'deleteproducts'
             ],
 

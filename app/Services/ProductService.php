@@ -25,7 +25,7 @@ class ProductService
         $sortOrder = (($request->has('sortDesc') && $request->sortDesc == 'true') ? 'DESC' : 'ASC');
         $sortBy = (($request->has('sortBy') && $request->sortBy != '') ? $request->sortBy : 'id');
 
-        $q = Product::query()->with(['service:id,title', 'images']);
+        $q = Product::query()->with(['category:id,title', 'images']);
 
         // filter (same logic as your users)
         $filterArray = $request->filter ?? [];
@@ -71,7 +71,7 @@ class ProductService
                 $product = new Product();
             }
 
-            $product->service_id = $request->service_id ?: null;
+            $product->category_id = $request->category_id ?: null;
             $product->title = $request->title;
             $product->description = $request->description ?: null;
             $product->price = $request->price ?: null;
@@ -108,7 +108,7 @@ class ProductService
 
             DB::commit();
 
-            $product = Product::with(['service:id,title', 'images'])->find($product->id);
+            $product = Product::with(['category:id,title', 'images'])->find($product->id);
 
             return Response::json([
                 'isSuccess' => true,

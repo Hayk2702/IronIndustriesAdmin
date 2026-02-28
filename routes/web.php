@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AboutCompanyController;
 use App\Http\Controllers\AboutUsController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
@@ -39,6 +40,8 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['multiLang']], function 
             Route::resource('about-us', AboutUsController::class)->names('about-us');
 
             Route::resource('services', ServiceController::class)->names('services');
+
+            Route::resource('categories', CategoryController::class)->names('categories');
 
             Route::delete('services/{service}/images/{image}', [ServiceController::class, 'deleteImage'])->name('services.images.delete');
 

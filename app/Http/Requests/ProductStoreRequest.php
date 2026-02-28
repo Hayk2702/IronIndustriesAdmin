@@ -18,7 +18,7 @@ class ProductStoreRequest extends FailedValidation
         return [
             'id' => 'nullable|integer|exists:products,id',
 
-            'service_id' => 'nullable|integer|exists:services,id',
+            'category_id' => 'nullable|integer|exists:categories,id',
 
             'title' => 'required|string|max:150',
             'description' => 'nullable|string',
@@ -53,7 +53,7 @@ class ProductStoreRequest extends FailedValidation
             'images.*.mimes' => __('variable.wrong_image'),
             'images.*.max' => __('variable.image_max_4mb'),
 
-            'service_id.exists' => __('variable.not_found_error'),
+            'category_id.exists' => __('variable.not_found_error'),
         ];
     }
 }
