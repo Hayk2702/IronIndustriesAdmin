@@ -14,6 +14,8 @@ Route::group(['prefix' => '/', 'middleware' => 'blockcors'], function () {
 
         Route::get('services', [ApiController::class, 'services'])->name("services");
 
+        Route::get('categories', [ApiController::class, 'categories'])->name("categories");
+
         Route::get('products', [ApiController::class, 'products'])->name("products");
 
         Route::post('send-message', [ApiController::class, 'sendMessage'])->name('send-message');

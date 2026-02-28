@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\ContactMessageMail;
 use App\Models\AboutCompany;
 use App\Models\AboutUs;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Service;
 use Illuminate\Http\Request;
@@ -95,6 +96,60 @@ class ApiController extends Controller
             ], 500);
         }
     }
+    public function categories(Request $request)
+    {
+        try {
+
+            $query = Category::select([
+                'id',
+                'title',
+                'slug',
+                'description',
+            ])
+                ->with([
+                    'images' => function ($q) {
+                        $q->select([
+                            'id',
+                            'category_id',
+                            'image_path',
+                        ])
+                            ->orderBy('sort', 'asc');
+                    }
+                ]);
+
+            if ($request->filled('id')) {
+
+                $categories = $query->find($request->id);
+
+                if (!$categories) {
+                    return response()->json([
+                        'data' => null,
+                        'error' => 'Service not found'
+                    ], 404);
+                }
+
+                return response()->json([
+                    'data' => $categories,
+                    'error' => ''
+                ]);
+            }
+
+            // All categories
+            $categories = $query->latest()->get();
+
+            return response()->json([
+                'data' => $categories,
+                'error' => ''
+            ]);
+
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'data' => null,
+                'error' => 'Server Error'
+            ], 500);
+        }
+    }
 
     public function products(Request $request)
     {
@@ -109,7 +164,7 @@ class ApiController extends Controller
                 'weight',
                 'type',
                 'material',
-                'service_id',
+                'category_id',
             ])
                 ->with([
                     'images' => function ($q) {
@@ -119,9 +174,14 @@ class ApiController extends Controller
                             'image_path',
                         ]);
                     },
-                    'service:id,title,description'
+                    'category:id,title,description'
                 ]);
 
+            if ($request->filled('category_id')) {
+                $query->where('category_id', (int)$request->category_id);
+            }
+
+            // single product
             if ($request->filled('id')) {
 
                 $product = $query->find($request->id);
@@ -139,6 +199,7 @@ class ApiController extends Controller
                 ]);
             }
 
+            // pagination
             if ($request->filled('offset')) {
                 $query->offset((int)$request->offset);
             }
