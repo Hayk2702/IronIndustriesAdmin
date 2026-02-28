@@ -88,6 +88,9 @@
                             <span class="menu__title">{{ __('variable.products') }}</span>
                         </router-link>
                     </li>
+                    <li >
+                        <span>Test</span>
+                    </li>
                 </ul>
             </div>
 
