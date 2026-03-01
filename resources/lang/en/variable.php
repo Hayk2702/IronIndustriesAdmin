@@ -271,4 +271,29 @@ return [
     'wrong_passwords' => 'Passwords do not match',
     'min_password_error' => 'Password must be at least 8 characters',
 
+    /*
+|--------------------------------------------------------------------------
+| Prices (Materials) fields
+|--------------------------------------------------------------------------
+*/
+    'prices' => 'Prices',
+    'price' => 'Price', // (already exists in your file? if not - add)
+    'material_name' => 'Material name',
+
+    'cut_cost' => 'Cut cost',
+    'material_cost_per_kg' => 'Material cost per kg',
+    'density_kg_m3' => 'Density (kg/m³)',
+    'bend_price' => 'Bend price',
+
+    'available_thicknesses' => 'Available thicknesses',
+    'thicknesses' => 'Thicknesses',
+    'thickness_mm' => 'Thickness (mm)',
+
+    'cost_per_kg' => 'Cost/kg',
+    'density' => 'Density',
+    'bend' => 'Bend',
+
+
 ];
+
+

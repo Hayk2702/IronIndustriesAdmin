@@ -4,6 +4,7 @@ use App\Http\Controllers\AboutCompanyController;
 use App\Http\Controllers\AboutUsController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PriceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
@@ -46,6 +47,8 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['multiLang']], function 
             Route::delete('services/{service}/images/{image}', [ServiceController::class, 'deleteImage'])->name('services.images.delete');
 
             Route::resource('products', ProductController::class)->names('products');
+
+            Route::resource('prices', PriceController::class)->names('prices');
 
         });
 

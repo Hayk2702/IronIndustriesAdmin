@@ -7,6 +7,7 @@ import AboutUsComponent from "../components/AboutUsComponent.vue";
 import ServicesComponent from "../components/ServicesComponent.vue";
 import ProductsComponent from "../components/ProductsComponent.vue";
 import CategoriesComponent from "../components/CategoriesComponent.vue";
+import PricesComponent from "../components/PricesComponent.vue";
 
 Vue.use(VueRouter);
 
@@ -45,6 +46,11 @@ const routes = [
         path: '/:lang/dashboard/products',
         name: 'Products',
         component: ProductsComponent
+    },
+    {
+        path: '/:lang/dashboard/prices',
+        name: 'Prices',
+        component: PricesComponent
     },
 
 ];
