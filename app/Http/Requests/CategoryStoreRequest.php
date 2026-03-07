@@ -13,22 +13,19 @@ class CategoryStoreRequest extends FailedValidation
 
     public function rules(): array
     {
-        $rules = [
+        return [
             'title' => 'required|string|max:150',
             'slug' => 'required|string|max:150',
             'description' => 'nullable|string',
+            'position' => 'nullable|integer|min:1',
 
-            // multiple images:
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:4096',
 
-            // for edit
-            'id' => 'nullable|exists:services,id',
+            'id' => 'nullable|exists:categories,id',
             'deleted_image_ids' => 'nullable|array',
             'deleted_image_ids.*' => 'integer',
         ];
-
-        return $rules;
     }
 
     public function messages(): array

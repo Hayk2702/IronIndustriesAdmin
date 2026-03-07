@@ -37,7 +37,8 @@
         "vue2-bootstrap-table2": "^1.2.5",
         "vue2-datepicker": "^3.11.1",
         "vue2-datepicker-mask": "^2.0.2",
-        "vue2-timepicker": "^1.1.6"
+        "vue2-timepicker": "^1.1.6",
+        "vuedraggable": "^2.24.3"
     },
     "overrides": {
         "autoprefixer": "10.4.5"

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CategoryReorderRequest;
 use App\Http\Requests\CategoryShowRequest;
 use App\Http\Requests\CategoryStoreRequest;
 use App\Services\CategoryService;
@@ -28,5 +29,10 @@ class CategoryController extends Controller
     public function deleteImage($serviceId, $imageId)
     {
         return $this->categoryService->deleteImage($serviceId, $imageId);
+    }
+
+    public function updatePositions(CategoryReorderRequest $request)
+    {
+        return $this->categoryService->reorder($request->validated()['items']);
     }
 }

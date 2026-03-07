@@ -44,6 +44,8 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['multiLang']], function 
 
             Route::resource('categories', CategoryController::class)->names('categories');
 
+            Route::post('/categories/update-positions', [CategoryController::class, 'updatePositions'])->name('categories.updatePositions');
+
             Route::delete('services/{service}/images/{image}', [ServiceController::class, 'deleteImage'])->name('services.images.delete');
 
             Route::resource('products', ProductController::class)->names('products');

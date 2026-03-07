@@ -18,6 +18,15 @@
                 <!-- Address -->
                 <div class="field">
                     <input
+                        v-model="form.email"
+                        :placeholder="__('variable.email')"
+                        class="glassInput"
+                        :class="errors.email ? 'error-border' : ''"
+                    />
+                    <small v-if="errors.email" class="error-msg">{{ errors.email }}</small>
+                </div>
+                <div class="field">
+                    <input
                         v-model="form.address"
                         :placeholder="__('variable.address')"
                         class="glassInput"
@@ -154,6 +163,7 @@ export default {
             errors: {},
 
             form: {
+                email: "",
                 address: "",
                 phone: "",
                 lat: "",

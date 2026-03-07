@@ -97,12 +97,12 @@ class ApiController extends Controller
     public function categories(Request $request)
     {
         try {
-
             $query = Category::select([
                 'id',
                 'title',
                 'slug',
                 'description',
+                'position',
             ])
                 ->with([
                     'images' => function ($q) {
@@ -110,13 +110,11 @@ class ApiController extends Controller
                             'id',
                             'category_id',
                             'image_path',
-                        ])
-                            ->orderBy('sort', 'asc');
+                        ])->orderBy('sort', 'asc');
                     }
                 ]);
 
             if ($request->filled('id')) {
-
                 $categories = $query->find($request->id);
 
                 if (!$categories) {
@@ -132,8 +130,9 @@ class ApiController extends Controller
                 ]);
             }
 
-            // All categories
-            $categories = $query->latest()->get();
+            $categories = $query
+                ->orderBy('position', 'asc')
+                ->get();
 
             return response()->json([
                 'data' => $categories,
@@ -141,7 +140,6 @@ class ApiController extends Controller
             ]);
 
         } catch (\Throwable $e) {
-
             return response()->json([
                 'data' => null,
                 'error' => 'Server Error'

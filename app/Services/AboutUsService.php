@@ -26,6 +26,7 @@ class AboutUsService
 
             $row = AboutUs::first() ?? new AboutUs();
 
+            $row->email = $request->email;
             $row->address = $request->address;
             $row->phone = $request->phone;
             $row->lat = $request->lat;

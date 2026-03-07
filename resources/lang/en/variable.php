@@ -293,6 +293,8 @@ return [
     'density' => 'Density',
     'bend' => 'Bend',
 
+    'position' => 'Position',
+
 
 ];
 

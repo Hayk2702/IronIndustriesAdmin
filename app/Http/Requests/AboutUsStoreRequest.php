@@ -24,6 +24,7 @@ class AboutUsStoreRequest extends FailedValidation
     public function rules(): array
     {
         return [
+            'email'        => 'nullable|string|max:255',
             'address'        => 'nullable|string|max:255',
             'phone'          => 'nullable|string|max:50',
 
@@ -56,6 +57,7 @@ class AboutUsStoreRequest extends FailedValidation
             'linkedin.url'  => __('variable.wrong_url'),
             'telegram.url'  => __('variable.wrong_url'),
 
+            'email.max' => __('variable.max_255_error'),
             'address.max' => __('variable.max_255_error'),
             'phone.max'   => __('variable.max_50_error'),
         ];
