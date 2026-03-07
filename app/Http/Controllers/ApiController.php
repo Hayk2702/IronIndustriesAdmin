@@ -147,79 +147,86 @@ class ApiController extends Controller
         }
     }
 
-    public function products(Request $request)
-    {
-        try {
+public function products(Request $request)
+{
+    try {
 
-            $query = Product::select([
-                'id',
-                'title',
-                'description',
-                'price',
-                'size',
-                'weight',
-                'type',
-                'material',
-                'category_id',
-            ])
-                ->with([
-                    'images' => function ($q) {
-                        $q->select([
-                            'id',
-                            'product_id',
-                            'image_path',
-                        ]);
-                    },
-                    'category:id,title,description'
+        $query = Product::select([
+            'id',
+            'title',
+            'description',
+            'price',
+            'size',
+            'weight',
+            'type',
+            'material',
+            'category_id',
+        ])
+        ->with([
+            'images' => function ($q) {
+                $q->select([
+                    'id',
+                    'product_id',
+                    'image_path',
                 ]);
+            },
+            'category:id,title,description,slug'
+        ]);
 
-            if ($request->filled('category_id')) {
-                $query->where('category_id', (int)$request->category_id);
-            }
+        // filter by category id
+        if ($request->filled('category_id')) {
+            $query->where('category_id', (int)$request->category_id);
+        }
 
-            // single product
-            if ($request->filled('id')) {
+        // filter by category slug
+        if ($request->filled('category_slug')) {
+            $query->whereHas('category', function ($q) use ($request) {
+                $q->where('slug', $request->category_slug);
+            });
+        }
 
-                $product = $query->find($request->id);
+        // single product
+        if ($request->filled('id')) {
 
-                if (!$product) {
-                    return response()->json([
-                        'data' => null,
-                        'error' => 'Product not found'
-                    ], 404);
-                }
+            $product = $query->find($request->id);
 
+            if (!$product) {
                 return response()->json([
-                    'data' => $product,
-                    'error' => ''
-                ]);
+                    'data' => null,
+                    'error' => 'Product not found'
+                ], 404);
             }
-
-            // pagination
-            if ($request->filled('offset')) {
-                $query->offset((int)$request->offset);
-            }
-
-            if ($request->filled('limit')) {
-                $query->limit((int)$request->limit);
-            }
-
-            $products = $query->latest('id')->get();
 
             return response()->json([
-                'data' => $products,
+                'data' => $product,
                 'error' => ''
             ]);
-
-        } catch (\Throwable $e) {
-
-            return response()->json([
-                'data' => null,
-                'error' => 'Server Error',
-            ], 500);
         }
-    }
 
+        // pagination
+        if ($request->filled('offset')) {
+            $query->offset((int)$request->offset);
+        }
+
+        if ($request->filled('limit')) {
+            $query->limit((int)$request->limit);
+        }
+
+        $products = $query->latest('id')->get();
+
+        return response()->json([
+            'data' => $products,
+            'error' => ''
+        ]);
+
+    } catch (\Throwable $e) {
+
+        return response()->json([
+            'data' => null,
+            'error' => 'Server Error',
+        ], 500);
+    }
+}
     public function prices(Request $request)
     {
         try {
