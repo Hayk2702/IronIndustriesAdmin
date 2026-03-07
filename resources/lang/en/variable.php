@@ -294,6 +294,8 @@ return [
     'bend' => 'Bend',
 
     'position' => 'Position',
+    'preorder' => 'Preorder',
+    'preorders' => 'Preorders',
 
 
 ];

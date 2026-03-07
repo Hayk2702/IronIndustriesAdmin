@@ -22,7 +22,7 @@ Route::group(['prefix' => '/', 'middleware' => 'blockcors'], function () {
 
         Route::post('send-message', [ApiController::class, 'sendMessage'])->name('send-message');
 
-
+        Route::post('preorders', [ApiController::class, 'storePreorder'])->name('preorders-store');
     });
 
 

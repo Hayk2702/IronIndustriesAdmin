@@ -161,6 +161,24 @@ class Permissions extends Seeder
                 'slug' => 'deleteprices'
             ],
 
+
+            [
+                'name' => 'Show Preorders',
+                'slug' => 'showpreorders'
+            ],
+            [
+                'name' => 'Create Preorders',
+                'slug' => 'createpreorders'
+            ],
+            [
+                'name' => 'Edit Preorders',
+                'slug' => 'editpreorders'
+            ],
+            [
+                'name' => 'Delete Preorders',
+                'slug' => 'deletepreorders'
+            ],
+
         ];
         DB::table('permissions')->truncate();
 

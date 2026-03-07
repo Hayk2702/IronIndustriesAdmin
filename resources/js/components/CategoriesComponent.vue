@@ -3,7 +3,7 @@
         <SearchComponent
             ref="SearchComponent"
             @filter-updated="updateFilter"
-            :keys="fields.filter(item => item.key !== 'actions' && item.key !== 'drag')"
+            :keys="fields.filter(item => item.key !== 'actions' && item.key !== 'drag' && item.key !== 'images')"
             :isCondition="false"
             :isAction="false"
         />

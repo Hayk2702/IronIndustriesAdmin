@@ -4,6 +4,7 @@ use App\Http\Controllers\AboutCompanyController;
 use App\Http\Controllers\AboutUsController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PreorderController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
@@ -51,6 +52,10 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['multiLang']], function 
             Route::resource('products', ProductController::class)->names('products');
 
             Route::resource('prices', PriceController::class)->names('prices');
+
+            Route::resource('preorders', PreorderController::class)->names('preorders');
+
+            Route::post('markViewed/{id}', [PreorderController::class, 'markViewed'])->name('preorders.markViewed');
 
         });
 

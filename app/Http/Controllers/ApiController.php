@@ -6,6 +6,7 @@ use App\Mail\ContactMessageMail;
 use App\Models\AboutCompany;
 use App\Models\AboutUs;
 use App\Models\Category;
+use App\Models\Preorder;
 use App\Models\Product;
 use App\Models\Service;
 use Illuminate\Http\Request;
@@ -322,7 +323,6 @@ class ApiController extends Controller
         }
     }
 
-
     public function sendMessage(Request $request)
     {
         try {
@@ -374,5 +374,45 @@ class ApiController extends Controller
         }
     }
 
+    public function storePreorder(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'full_name' => ['required', 'string', 'max:255'],
+                'phone_number' => ['required', 'string', 'max:100'],
+                'email' => ['nullable', 'email', 'max:255'],
+                'calculating_information' => ['required', 'string'],
+                'comment' => ['nullable', 'string', 'max:5000'],
+            ]);
 
+            $preorder = Preorder::create([
+                'full_name' => $validated['full_name'],
+                'phone_number' => $validated['phone_number'],
+                'email' => $validated['email'] ?? null,
+                'calculating_information' => $validated['calculating_information'],
+                'comment' => $validated['comment'] ?? null,
+                'is_viewed' => false,
+            ]);
+
+            return response()->json([
+                'data' => $preorder,
+                'message' => 'Preorder created successfully',
+                'error' => '',
+            ], 201);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'data' => null,
+                'message' => 'Validation error',
+                'error' => 'Validation error',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'data' => $e->getMessage(),
+                'message' => 'Server Error',
+                'error' => 'Server Error',
+            ], 500);
+        }
+    }
 }
