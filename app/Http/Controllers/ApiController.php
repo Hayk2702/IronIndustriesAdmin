@@ -94,6 +94,7 @@ class ApiController extends Controller
             ], 500);
         }
     }
+
     public function categories(Request $request)
     {
         try {
@@ -147,86 +148,87 @@ class ApiController extends Controller
         }
     }
 
-public function products(Request $request)
-{
-    try {
+    public function products(Request $request)
+    {
+        try {
 
-        $query = Product::select([
-            'id',
-            'title',
-            'description',
-            'price',
-            'size',
-            'weight',
-            'type',
-            'material',
-            'category_id',
-        ])
-        ->with([
-            'images' => function ($q) {
-                $q->select([
-                    'id',
-                    'product_id',
-                    'image_path',
+            $query = Product::select([
+                'id',
+                'title',
+                'description',
+                'price',
+                'size',
+                'weight',
+                'type',
+                'material',
+                'category_id',
+            ])
+                ->with([
+                    'images' => function ($q) {
+                        $q->select([
+                            'id',
+                            'product_id',
+                            'image_path',
+                        ]);
+                    },
+                    'category:id,title,description,slug'
                 ]);
-            },
-            'category:id,title,description,slug'
-        ]);
 
-        // filter by category id
-        if ($request->filled('category_id')) {
-            $query->where('category_id', (int)$request->category_id);
-        }
-
-        // filter by category slug
-        if ($request->filled('category_slug')) {
-            $query->whereHas('category', function ($q) use ($request) {
-                $q->where('slug', $request->category_slug);
-            });
-        }
-
-        // single product
-        if ($request->filled('id')) {
-
-            $product = $query->find($request->id);
-
-            if (!$product) {
-                return response()->json([
-                    'data' => null,
-                    'error' => 'Product not found'
-                ], 404);
+            // filter by category id
+            if ($request->filled('category_id')) {
+                $query->where('category_id', (int)$request->category_id);
             }
 
+            // filter by category slug
+            if ($request->filled('category_slug')) {
+                $query->whereHas('category', function ($q) use ($request) {
+                    $q->where('slug', $request->category_slug);
+                });
+            }
+
+            // single product
+            if ($request->filled('id')) {
+
+                $product = $query->find($request->id);
+
+                if (!$product) {
+                    return response()->json([
+                        'data' => null,
+                        'error' => 'Product not found'
+                    ], 404);
+                }
+
+                return response()->json([
+                    'data' => $product,
+                    'error' => ''
+                ]);
+            }
+
+            // pagination
+            if ($request->filled('offset')) {
+                $query->offset((int)$request->offset);
+            }
+
+            if ($request->filled('limit')) {
+                $query->limit((int)$request->limit);
+            }
+
+            $products = $query->latest('id')->get();
+
             return response()->json([
-                'data' => $product,
+                'data' => $products,
                 'error' => ''
             ]);
+
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'data' => null,
+                'error' => 'Server Error',
+            ], 500);
         }
-
-        // pagination
-        if ($request->filled('offset')) {
-            $query->offset((int)$request->offset);
-        }
-
-        if ($request->filled('limit')) {
-            $query->limit((int)$request->limit);
-        }
-
-        $products = $query->latest('id')->get();
-
-        return response()->json([
-            'data' => $products,
-            'error' => ''
-        ]);
-
-    } catch (\Throwable $e) {
-
-        return response()->json([
-            'data' => null,
-            'error' => 'Server Error',
-        ], 500);
     }
-}
+
     public function prices(Request $request)
     {
         try {
@@ -325,11 +327,11 @@ public function products(Request $request)
     {
         try {
             $validated = $request->validate([
-                'email'    => ['required', 'email', 'max:255'],
+                'email' => ['required', 'email', 'max:255'],
                 'fullname' => ['required', 'string', 'max:255'],
-                'phone'    => ['nullable', 'string', 'max:50'],
-                'message'  => ['required', 'string', 'max:5000'],
-                'file'     => ['nullable', 'file', 'max:10240', 'mimes:jpg,jpeg,png,pdf,doc,docx,txt'],
+                'phone' => ['nullable', 'string', 'max:50'],
+                'message' => ['required', 'string', 'max:5000'],
+                'file' => ['nullable', 'file', 'max:10240', 'mimes:jpg,jpeg,png,pdf,doc,docx,txt'],
             ]);
 
             $toEmail = "armorbita@gmail.com";
