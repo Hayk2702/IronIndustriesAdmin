@@ -22,8 +22,9 @@ class ProductService
 
     private function getData($request)
     {
+        $allowedSorts = ['id', 'position', 'title', 'price', 'weight', 'size', 'type', 'material'];
         $sortOrder = (($request->has('sortDesc') && $request->sortDesc == 'true') ? 'DESC' : 'ASC');
-        $sortBy = (($request->has('sortBy') && $request->sortBy != '') ? $request->sortBy : 'id');
+        $sortBy = (($request->has('sortBy') && in_array($request->sortBy, $allowedSorts, true)) ? $request->sortBy : 'position');
 
         $q = Product::query()->with(['category:id,title', 'images']);
 
@@ -52,7 +53,10 @@ class ProductService
 
         $perPage = $request->perPage ?: 10;
 
-        return $q->orderBy($sortBy, $sortOrder)->paginate($perPage);
+        return $q->orderByRaw('CASE WHEN position IS NULL THEN 1 ELSE 0 END ASC')
+            ->orderBy($sortBy, $sortOrder)
+            ->orderBy('id', 'DESC')
+            ->paginate($perPage);
     }
 
     public function store($request)
@@ -69,6 +73,7 @@ class ProductService
             } else {
                 if (!(Auth::user() && Auth::user()->can('createproducts'))) abort(403);
                 $product = new Product();
+                $product->position = ((int) Product::max('position')) + 1;
             }
 
             $product->category_id = $request->category_id ?: null;
@@ -79,6 +84,9 @@ class ProductService
             $product->weight = $request->weight !== null ? $request->weight : null;
             $product->type = $request->type ?: null;
             $product->material = $request->material ?: null;
+            if ($request->filled('position')) {
+                $product->position = (int) $request->position;
+            }
             $product->save();
 
             // delete images by ids
@@ -119,6 +127,28 @@ class ProductService
             DB::rollBack();
             return Response::json(["message" => $e->getMessage()], 400);
         }
+    }
+
+    public function updatePositions($request)
+    {
+        if (!(Auth::user() && Auth::user()->can('editproducts'))) abort(403);
+
+        $validated = $request->validate([
+            'items' => ['required', 'array'],
+            'items.*.id' => ['required', 'integer', 'exists:products,id'],
+            'items.*.position' => ['required', 'integer', 'min:1'],
+        ]);
+
+        DB::transaction(function () use ($validated) {
+            foreach ($validated['items'] as $item) {
+                Product::where('id', $item['id'])->update(['position' => $item['position']]);
+            }
+        });
+
+        return Response::json([
+            'isSuccess' => true,
+            'message' => __('variable.updated_successfully'),
+        ]);
     }
 
     public function destroy($id)

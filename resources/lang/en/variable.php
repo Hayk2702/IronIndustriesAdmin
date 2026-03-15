@@ -177,8 +177,6 @@ return [
     'or' => 'OR',
 
 
-
-
     'about_company' => 'About Company',
     'title' => 'Title',
     'description' => 'Description',
@@ -282,7 +280,7 @@ return [
 
     'cut_cost' => 'Cut cost',
     'material_cost_per_kg' => 'Material cost per kg',
-    'density_kg_m3' => 'Density (kg/m³)',
+    'density_kg_m2' => 'Density (kg/m²)',
     'bend_price' => 'Bend price',
 
     'available_thicknesses' => 'Available thicknesses',
@@ -296,6 +294,7 @@ return [
     'position' => 'Position',
     'preorder' => 'Preorder',
     'preorders' => 'Preorders',
+    'drag' => 'Drag',
 
 
 ];

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ServiceShowRequest;
 use App\Http\Requests\ServiceStoreRequest;
 use App\Services\ServiceService;
+use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
@@ -28,5 +29,10 @@ class ServiceController extends Controller
     public function deleteImage($serviceId, $imageId)
     {
         return $this->serviceService->deleteImage($serviceId, $imageId);
+    }
+
+    public function updatePositions(Request $request)
+    {
+        return $this->serviceService->updatePositions($request);
     }
 }

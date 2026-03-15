@@ -20,14 +20,14 @@ class PriceService
 
     private function getData($request)
     {
+        $allowedSorts = ['id', 'position', 'material_name', 'cut_cost', 'material_cost_per_kg', 'density_kg_m2', 'bend_price'];
         $sortOrder = (($request->has('sortDesc') && $request->sortDesc == 'true') ? 'DESC' : 'ASC');
-        $sortBy = (($request->has('sortBy') && $request->sortBy != '') ? $request->sortBy : 'id');
+        $sortBy = (($request->has('sortBy') && in_array($request->sortBy, $allowedSorts, true)) ? $request->sortBy : 'position');
 
         $q = MaterialPrice::query()->with([
             'thicknesses:id,material_price_id,thickness_mm'
         ]);
 
-        // your existing filter logic (same as products/users)
         $filterArray = $request->filter ?? [];
         foreach ($filterArray as $index => $filter) {
             $filter = json_decode($filter);
@@ -52,7 +52,10 @@ class PriceService
 
         $perPage = $request->perPage ?: 10;
 
-        return $q->orderBy($sortBy, $sortOrder)->paginate($perPage);
+        return $q->orderByRaw('CASE WHEN position IS NULL THEN 1 ELSE 0 END ASC')
+            ->orderBy($sortBy, $sortOrder)
+            ->orderBy('id', 'DESC')
+            ->paginate($perPage);
     }
 
     public function store($request)
@@ -69,13 +72,17 @@ class PriceService
             } else {
                 if (!(Auth::user() && Auth::user()->can('createprices'))) abort(403);
                 $item = new MaterialPrice();
+                $item->position = ((int) MaterialPrice::max('position')) + 1;
             }
 
             $item->material_name = $request->material_name;
             $item->cut_cost = $request->cut_cost !== null && $request->cut_cost !== '' ? $request->cut_cost : null;
             $item->material_cost_per_kg = $request->material_cost_per_kg !== null && $request->material_cost_per_kg !== '' ? $request->material_cost_per_kg : null;
-            $item->density_kg_m3 = $request->density_kg_m3 !== null && $request->density_kg_m3 !== '' ? $request->density_kg_m3 : null;
+            $item->density_kg_m2 = $request->density_kg_m2 !== null && $request->density_kg_m2 !== '' ? $request->density_kg_m2 : null;
             $item->bend_price = $request->bend_price !== null && $request->bend_price !== '' ? $request->bend_price : null;
+            if ($request->filled('position')) {
+                $item->position = (int) $request->position;
+            }
             $item->save();
 
             // sync thicknesses (replace all)
@@ -114,6 +121,28 @@ class PriceService
             DB::rollBack();
             return Response::json(["message" => $e->getMessage()], 400);
         }
+    }
+
+    public function updatePositions($request)
+    {
+        if (!(Auth::user() && Auth::user()->can('editprices'))) abort(403);
+
+        $validated = $request->validate([
+            'items' => ['required', 'array'],
+            'items.*.id' => ['required', 'integer', 'exists:material_prices,id'],
+            'items.*.position' => ['required', 'integer', 'min:1'],
+        ]);
+
+        DB::transaction(function () use ($validated) {
+            foreach ($validated['items'] as $item) {
+                MaterialPrice::where('id', $item['id'])->update(['position' => $item['position']]);
+            }
+        });
+
+        return Response::json([
+            'isSuccess' => true,
+            'message' => __('variable.updated_successfully'),
+        ]);
     }
 
     public function destroy($id)

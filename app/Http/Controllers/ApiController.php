@@ -50,6 +50,7 @@ class ApiController extends Controller
                 'id',
                 'title',
                 'description',
+                'position',
             ])
                 ->with([
                     'images' => function ($q) {
@@ -79,8 +80,11 @@ class ApiController extends Controller
                 ]);
             }
 
-            // All services
-            $services = $query->latest()->get();
+        $services = $query
+            ->orderByRaw("CASE WHEN position IS NULL THEN 1 ELSE 0 END ASC")
+            ->orderBy("position", "asc")
+            ->orderBy('id', 'desc')
+            ->get();
 
             return response()->json([
                 'data' => $services,
@@ -163,6 +167,7 @@ class ApiController extends Controller
                 'type',
                 'material',
                 'category_id',
+                'position',
             ])
                 ->with([
                     'images' => function ($q) {
@@ -214,7 +219,12 @@ class ApiController extends Controller
                 $query->limit((int)$request->limit);
             }
 
-            $products = $query->latest('id')->get();
+
+            $products = $query
+                ->orderByRaw("CASE WHEN position IS NULL THEN 1 ELSE 0 END ASC")
+                ->orderBy("position", "asc")
+                ->orderBy('id', 'desc')
+                ->get();
 
             return response()->json([
                 'data' => $products,
@@ -231,97 +241,102 @@ class ApiController extends Controller
     }
 
     public function prices(Request $request)
-    {
-        try {
-            $query = MaterialPrice::select([
-                'id',
-                'material_name',
-                'cut_cost',
-                'material_cost_per_kg',
-                'density_kg_m3',
-                'bend_price',
-                'created_at',
-                'updated_at',
-            ])->with([
-                'thicknesses' => function ($q) {
-                    $q->select([
-                        'id',
-                        'material_price_id',
-                        'thickness_mm',
-                    ])->orderBy('thickness_mm', 'asc');
-                }
-            ]);
+{
+    try {
+        $query = MaterialPrice::select([
+            'id',
+            'material_name',
+            'cut_cost',
+//            'material_cost_per_kg',
+            'density_kg_m2',
+            'bend_price',
+            'created_at',
+            'updated_at',
+            'position',
+        ])->with([
+            'thicknesses' => function ($q) {
+                $q->select([
+                    'id',
+                    'material_price_id',
+                    'thickness_mm',
+                ])->orderBy('thickness_mm', 'asc');
+            }
+        ]);
 
-            // single item by id
-            if ($request->filled('id')) {
-                $item = $query->find((int)$request->id);
+        // single item by id
+        if ($request->filled('id')) {
+            $item = $query->find((int)$request->id);
 
-                if (!$item) {
-                    return response()->json([
-                        'data' => null,
-                        'error' => 'Price not found'
-                    ], 404);
-                }
-
+            if (!$item) {
                 return response()->json([
-                    'data' => $item,
-                    'error' => ''
-                ]);
+                    'data' => null,
+                    'error' => 'Price not found'
+                ], 404);
             }
-
-            // FILTERS
-            if ($request->filled('material_name')) {
-                $query->where('material_name', 'LIKE', '%' . trim($request->material_name) . '%');
-            }
-
-            // numeric range helpers
-            $applyMinMax = function ($field, $minKey, $maxKey) use ($request, $query) {
-                if ($request->filled($minKey)) {
-                    $query->where($field, '>=', (float)$request->input($minKey));
-                }
-                if ($request->filled($maxKey)) {
-                    $query->where($field, '<=', (float)$request->input($maxKey));
-                }
-            };
-
-            $applyMinMax('cut_cost', 'min_cut_cost', 'max_cut_cost');
-            $applyMinMax('material_cost_per_kg', 'min_cost_per_kg', 'max_cost_per_kg');
-            $applyMinMax('density_kg_m3', 'min_density', 'max_density');
-            $applyMinMax('bend_price', 'min_bend_price', 'max_bend_price');
-
-            // filter by thickness (exact)
-            // example: ?thickness=3 or ?thickness=6.5
-            if ($request->filled('thickness')) {
-                $th = (float)str_replace(',', '.', $request->thickness);
-
-                $query->whereHas('thicknesses', function ($q) use ($th) {
-                    $q->where('thickness_mm', $th);
-                });
-            }
-
-            // pagination like your products
-            if ($request->filled('offset')) {
-                $query->offset((int)$request->offset);
-            }
-            if ($request->filled('limit')) {
-                $query->limit((int)$request->limit);
-            }
-
-            $items = $query->latest('id')->get();
 
             return response()->json([
-                'data' => $items,
+                'data' => $item,
                 'error' => ''
             ]);
-
-        } catch (\Throwable $e) {
-            return response()->json([
-                'data' => null,
-                'error' => 'Server Error',
-                'error2' => $e->getMessage(),
-            ], 500);
         }
+
+        // FILTERS
+        if ($request->filled('material_name')) {
+            $query->where('material_name', 'LIKE', '%' . trim($request->material_name) . '%');
+        }
+
+        // numeric range helpers
+        $applyMinMax = function ($field, $minKey, $maxKey) use ($request, $query) {
+            if ($request->filled($minKey)) {
+                $query->where($field, '>=', (float)$request->input($minKey));
+            }
+            if ($request->filled($maxKey)) {
+                $query->where($field, '<=', (float)$request->input($maxKey));
+            }
+        };
+
+        $applyMinMax('cut_cost', 'min_cut_cost', 'max_cut_cost');
+//        $applyMinMax('material_cost_per_kg', 'min_cost_per_kg', 'max_cost_per_kg');
+        $applyMinMax('density_kg_m2', 'min_density', 'max_density');
+        $applyMinMax('bend_price', 'min_bend_price', 'max_bend_price');
+
+        // filter by thickness (exact)
+        if ($request->filled('thickness')) {
+            $th = (float) str_replace(',', '.', $request->thickness);
+
+            $query->whereHas('thicknesses', function ($q) use ($th) {
+                $q->where('thickness_mm', $th);
+            });
+        }
+
+        // pagination like your products
+        if ($request->filled('offset')) {
+            $query->offset((int)$request->offset);
+        }
+
+        if ($request->filled('limit')) {
+            $query->limit((int)$request->limit);
+        }
+
+        $items = $query
+            ->orderByRaw('CASE WHEN position IS NULL THEN 1 ELSE 0 END ASC')
+            ->orderBy('position', 'asc')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json([
+            'data' => $items,
+            'error' => ''
+        ]);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'data' => null,
+            'error' => 'Server Error',
+            'error2' => $e->getMessage(),
+        ], 500);
     }
+}
 
     public function sendMessage(Request $request)
     {

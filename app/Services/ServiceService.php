@@ -22,8 +22,9 @@ class ServiceService
 
     private function getData($request)
     {
+        $allowedSorts = ['id', 'position', 'title'];
         $sortOrder = (($request->has('sortDesc') && $request->sortDesc == 'true') ? 'DESC' : 'ASC');
-        $sortBy = (($request->has('sortBy') && $request->sortBy != '') ? $request->sortBy : 'id');
+        $sortBy = (($request->has('sortBy') && in_array($request->sortBy, $allowedSorts, true)) ? $request->sortBy : 'position');
 
         $q = Service::query();
 
@@ -50,7 +51,13 @@ class ServiceService
             }
         }
 
-        return $q->with('images')->orderBy($sortBy, $sortOrder)->paginate($request->perPage);
+        $perPage = $request->perPage ?: 10;
+
+        return $q->with('images')
+            ->orderByRaw('CASE WHEN position IS NULL THEN 1 ELSE 0 END ASC')
+            ->orderBy($sortBy, $sortOrder)
+            ->orderBy('id', 'DESC')
+            ->paginate($perPage);
     }
 
     public function store($request)
@@ -58,9 +65,22 @@ class ServiceService
         try {
             DB::beginTransaction();
 
-            $service = ($request->id) ? Service::find($request->id) : new Service();
+            $isEdit = (bool) $request->id;
+            if ($isEdit) {
+                if (!(Auth::user() && Auth::user()->can('editservices'))) abort(403);
+                $service = Service::find($request->id);
+                if (!$service) return Response::json(['isSuccess' => false, 'message' => __('variable.not_found_error')], 404);
+            } else {
+                if (!(Auth::user() && Auth::user()->can('createservices'))) abort(403);
+                $service = new Service();
+                $service->position = ((int) Service::max('position')) + 1;
+            }
+
             $service->title = $request->title;
             $service->description = $request->description;
+            if ($request->filled('position')) {
+                $service->position = (int) $request->position;
+            }
             $service->save();
 
             // delete images by ids (from edit form)
@@ -99,6 +119,28 @@ class ServiceService
             DB::rollBack();
             return Response::json(["message" => $e->getMessage()], 400);
         }
+    }
+
+    public function updatePositions($request)
+    {
+        if (!(Auth::user() && Auth::user()->can('editservices'))) abort(403);
+
+        $validated = $request->validate([
+            'items' => ['required', 'array'],
+            'items.*.id' => ['required', 'integer', 'exists:services,id'],
+            'items.*.position' => ['required', 'integer', 'min:1'],
+        ]);
+
+        DB::transaction(function () use ($validated) {
+            foreach ($validated['items'] as $item) {
+                Service::where('id', $item['id'])->update(['position' => $item['position']]);
+            }
+        });
+
+        return Response::json([
+            'isSuccess' => true,
+            'message' => __('variable.updated_successfully'),
+        ]);
     }
 
     public function destroy($id)

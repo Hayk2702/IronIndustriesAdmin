@@ -18,7 +18,7 @@ class CreateMaterialPricesTable extends Migration
             $table->string('material_name', 150);
             $table->decimal('cut_cost', 12, 2)->nullable();
             $table->decimal('material_cost_per_kg', 12, 2)->nullable();
-            $table->decimal('density_kg_m3', 12, 4)->nullable();
+            $table->decimal('density_kg_m2', 12, 4)->nullable();
             $table->decimal('bend_price', 12, 2)->nullable();
             $table->timestamps();
         });

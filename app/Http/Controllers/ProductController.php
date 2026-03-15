@@ -6,6 +6,7 @@ use App\Http\Requests\ProductDestroyRequest;
 use App\Http\Requests\ProductShowRequest;
 use App\Http\Requests\ProductStoreRequest;
 use App\Services\ProductService;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -24,5 +25,10 @@ class ProductController extends Controller
     public function destroy(ProductDestroyRequest $request, $id)
     {
         return $this->productService->destroy($id);
+    }
+
+    public function updatePositions(Request $request)
+    {
+        return $this->productService->updatePositions($request);
     }
 }

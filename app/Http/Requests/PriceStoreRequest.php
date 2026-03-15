@@ -20,7 +20,7 @@ class PriceStoreRequest extends FailedValidation
 
             'cut_cost' => 'nullable|numeric|min:0|max:9999999999',
             'material_cost_per_kg' => 'nullable|numeric|min:0|max:9999999999',
-            'density_kg_m3' => 'nullable|numeric|min:0|max:9999999999',
+            'density_kg_m2' => 'nullable|numeric|min:0|max:9999999999',
             'bend_price' => 'nullable|numeric|min:0|max:9999999999',
 
             'thicknesses' => 'nullable|array',

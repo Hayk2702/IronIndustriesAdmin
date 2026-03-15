@@ -13,7 +13,7 @@ class MaterialPrice extends Model
         'material_name',
         'cut_cost',
         'material_cost_per_kg',
-        'density_kg_m3',
+        'density_kg_m2',
         'bend_price',
     ];
 

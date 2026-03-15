@@ -26,4 +26,9 @@ class PriceController extends Controller
     {
         return $this->priceService->destroy($id);
     }
+
+    public function updatePositions(Request $request)
+    {
+        return $this->priceService->updatePositions($request);
+    }
 }

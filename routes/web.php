@@ -43,6 +43,8 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['multiLang']], function 
 
             Route::resource('services', ServiceController::class)->names('services');
 
+            Route::post('/services/update-positions', [ServiceController::class, 'updatePositions'])->name('services.updatePositions');
+
             Route::resource('categories', CategoryController::class)->names('categories');
 
             Route::post('/categories/update-positions', [CategoryController::class, 'updatePositions'])->name('categories.updatePositions');
@@ -51,11 +53,18 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['multiLang']], function 
 
             Route::resource('products', ProductController::class)->names('products');
 
+            Route::post('/products/update-positions', [ProductController::class, 'updatePositions'])->name('products.updatePositions');
+
             Route::resource('prices', PriceController::class)->names('prices');
+
+            Route::post('/prices/update-positions', [PriceController::class, 'updatePositions'])->name('prices.updatePositions');
 
             Route::resource('preorders', PreorderController::class)->names('preorders');
 
             Route::post('markViewed/{id}', [PreorderController::class, 'markViewed'])->name('preorders.markViewed');
+
+
+
 
         });
 
