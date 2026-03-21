@@ -30,7 +30,7 @@
                             :small="showTableLine"
                             :bordered="showTableLine"
                             :filter="filter"
-                            @row-clicked="openDetail"
+<!--                            @row-clicked="openDetail"-->
                         >
                             <template #table-busy>
                                 <div class="text-center text-danger my-2">
@@ -58,13 +58,13 @@
                             </template>
 
                             <template #cell(actions)="row">
-                                <a
-                                    class="btn btn-inverse-warning p-1 a_position"
-                                    href="javascript:void(0)"
-                                    @click.stop="openDetail(row.item)"
-                                >
-                                    {{ __('variable.edit') || 'View' }}
-                                </a>
+<!--                                <a-->
+<!--                                    class="btn btn-inverse-warning p-1 a_position"-->
+<!--                                    href="javascript:void(0)"-->
+<!--                                    @click.stop="openDetail(row.item)"-->
+<!--                                >-->
+<!--                                    {{ __('variable.edit') || 'View' }}-->
+<!--                                </a>-->
 
                                 <button
                                     v-if="!row.item.is_viewed && can('editpreorders')"
