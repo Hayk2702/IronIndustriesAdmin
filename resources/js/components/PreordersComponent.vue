@@ -30,8 +30,9 @@
                             :small="showTableLine"
                             :bordered="showTableLine"
                             :filter="filter"
-<!--                            @row-clicked="openDetail"-->
                         >
+                            <!--                            @row-clicked="openDetail"-->
+
                             <template #table-busy>
                                 <div class="text-center text-danger my-2">
                                     <b-spinner class="align-middle"></b-spinner>
