@@ -35,7 +35,6 @@ class ApiDataLoggerService
             $log->duration = number_format($endTime - LARAVEL_START, 3);
             $log->ip_address = self::getRealIpAddr();
             $log->user_id = (($user)  ? $user->id : '');
-            $log->organization_id = (($user)  ? $user->organization_id : '');
             $log->headers = $request->header('Authorization');
             $log->url = $request->fullUrl();
             $log->type = $type;
