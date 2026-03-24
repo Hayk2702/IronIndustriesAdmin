@@ -20,7 +20,7 @@ class PriceService
 
     private function getData($request)
     {
-        $allowedSorts = ['id', 'position', 'material_name', 'cut_cost', 'material_cost_per_kg', 'density_kg_m2', 'bend_price'];
+        $allowedSorts = ['id', 'position', 'material_name', 'cut_cost' ,'entity_price', 'material_cost_per_kg', 'density_kg_m2', 'bend_price'];
         $sortOrder = (($request->has('sortDesc') && $request->sortDesc == 'true') ? 'DESC' : 'ASC');
         $sortBy = (($request->has('sortBy') && in_array($request->sortBy, $allowedSorts, true)) ? $request->sortBy : 'position');
 
@@ -77,6 +77,7 @@ class PriceService
 
             $item->material_name = $request->material_name;
             $item->cut_cost = $request->cut_cost !== null && $request->cut_cost !== '' ? $request->cut_cost : null;
+            $item->entity_price = $request->entity_price !== null && $request->entity_price !== '' ? $request->entity_price : null;
             $item->material_cost_per_kg = $request->material_cost_per_kg !== null && $request->material_cost_per_kg !== '' ? $request->material_cost_per_kg : null;
             $item->density_kg_m2 = $request->density_kg_m2 !== null && $request->density_kg_m2 !== '' ? $request->density_kg_m2 : null;
             $item->bend_price = $request->bend_price !== null && $request->bend_price !== '' ? $request->bend_price : null;

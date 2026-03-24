@@ -36,6 +36,7 @@
                                     <th style="width:80px;">{{ __('variable.drag') || 'Drag' }}</th>
                                     <th>{{ __('variable.material_name') }}</th>
                                     <th>{{ __('variable.cut_cost') }}</th>
+                                    <th>{{ __('variable.entity_price') }}</th>
 <!--                                    <th>{{ __('variable.material_cost_per_kg') }}</th>-->
                                     <th>{{ __('variable.density_kg_m2') }}</th>
                                     <th>{{ __('variable.bend_price') }}</th>
@@ -58,6 +59,7 @@
                                         <td @click.stop><button type="button" class="drag-handle-btn"><span class="drag-handle">☰</span></button></td>
                                         <td>{{ item.material_name }}</td>
                                         <td>{{ item.cut_cost }}</td>
+                                        <td>{{ item.entity_price }}</td>
 <!--                                        <td>{{ item.material_cost_per_kg }}</td>-->
                                         <td>{{ item.density_kg_m2 }}</td>
                                         <td>{{ item.bend_price }}</td>
@@ -128,6 +130,11 @@
 <!--                                <b-form-input v-model="form.material_cost_per_kg" class="addFormInputs" placeholder="0.00" />-->
 <!--                                <small v-if="errors.material_cost_per_kg" class="error-msg">{{ errors.material_cost_per_kg }}</small>-->
 <!--                            </b-col>-->
+                            <b-col md="6" class="blockInput">
+                                <label class="lbl">{{__('variable.entity_price')}}</label>
+                                <b-form-input v-model="form.entity_price" class="addFormInputs" placeholder="0.00" />
+                                <small v-if="errors.entity_price" class="error-msg">{{ errors.entity_price }}</small>
+                            </b-col>
                         </b-row>
 
                         <b-row class="mb-1 bRowPosition">
@@ -195,6 +202,7 @@ export default {
                 { key: "drag", label: this.__("variable.drag") || "Drag", sortable: false },
                 { key: "material_name", label: this.__("variable.material_name"), sortable: true },
                 { key: "cut_cost", label: this.__("variable.cut_cost"), sortable: true },
+                { key: "entity_price", label: this.__("variable.entity_price"), sortable: true },
                 // { key: "material_cost_per_kg", label: this.__("variable.material_cost_per_kg"), sortable: true },
                 { key: "density_kg_m2", label: this.__("variable.density_kg_m2"), sortable: true },
                 { key: "bend_price", label: this.__("variable.bend_price"), sortable: true },
@@ -211,7 +219,7 @@ export default {
             headerBgVariant: "custom",
             headerTextVariant: "white",
             addOrEdit: "add",
-            form: { id: null, material_name: "", cut_cost: "", density_kg_m2: "", bend_price: "", thicknesses: [], position: null }, //material_cost_per_kg: "",
+            form: { id: null, material_name: "", cut_cost: "",entity_price: "", density_kg_m2: "", bend_price: "", thicknesses: [], position: null }, //material_cost_per_kg: "",
             errors: {},
             buttonDisabled: false,
             isLoading: false,
@@ -295,6 +303,7 @@ export default {
                 id: obj ? obj.id : null,
                 material_name: obj ? (obj.material_name || "") : "",
                 cut_cost: obj ? (obj.cut_cost ?? "") : "",
+                entity_price: obj ? (obj.entity_price ?? "") : "",
                 // material_cost_per_kg: obj ? (obj.material_cost_per_kg ?? "") : "",
                 density_kg_m2: obj ? (obj.density_kg_m2 ?? "") : "",
                 bend_price: obj ? (obj.bend_price ?? "") : "",
@@ -312,6 +321,7 @@ export default {
                 id: this.form.id,
                 material_name: this.form.material_name,
                 cut_cost: this.form.cut_cost,
+                entity_price: this.form.entity_price,
                 // material_cost_per_kg: this.form.material_cost_per_kg,
                 density_kg_m2: this.form.density_kg_m2,
                 bend_price: this.form.bend_price,

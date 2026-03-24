@@ -295,6 +295,7 @@ return [
     'preorder' => 'Preorder',
     'preorders' => 'Preorders',
     'drag' => 'Drag',
+    'entity_price' => 'EntityPrice applied when parts >= 10)',
 
 
 ];
