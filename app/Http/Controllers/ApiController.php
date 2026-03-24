@@ -250,6 +250,7 @@ class ApiController extends Controller
 //            'material_cost_per_kg',
             'density_kg_m2',
             'bend_price',
+            'entity_price',
             'created_at',
             'updated_at',
             'position',
