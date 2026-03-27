@@ -350,7 +350,7 @@ class ApiController extends Controller
                 'file' => ['nullable', 'file', 'max:10240', 'mimes:jpg,jpeg,png,pdf,doc,docx,txt'],
             ]);
 
-            $toEmail = "armorbita@gmail.com";
+            $toEmail = "ironindustries.am@gmail.com";
 
             if (!$toEmail) {
                 return response()->json([
