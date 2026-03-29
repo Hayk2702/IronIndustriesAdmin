@@ -440,6 +440,7 @@ class ApiController extends Controller
                 );
             }
 
+
             $preorder = Preorder::create([
                 'full_name' => $validated['full_name'],
                 'phone_number' => $validated['phone_number'],
@@ -449,6 +450,14 @@ class ApiController extends Controller
                 'file_path' => $filePath,
                 'is_viewed' => false,
             ]);
+
+            try {
+                $contactUs = AboutUs::first();
+                $toEmail = $contactUs->email ? $contactUs->email :"ironindustries.am@gmail.com";
+                Mail::to($toEmail)->send(new NewPreorderMail($preorder));
+            } catch (\Throwable $mailException) {
+                \Log::error('Preorder mail send error: ' . $mailException->getMessage());
+            }
 
             return response()->json([
                 'data' => $preorder,
