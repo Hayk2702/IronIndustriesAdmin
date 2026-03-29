@@ -396,13 +396,36 @@ class ApiController extends Controller
     public function storePreorder(Request $request)
     {
         try {
+            \Log::info('CONTENT TYPE', [
+                'content_type' => $request->header('Content-Type'),
+                'content_length' => $request->server('CONTENT_LENGTH'),
+            ]);
+
+            \Log::info('REQUEST DATA', $request->except('file'));
+            \Log::info('ALL FILES', $request->allFiles());
+
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+
+                \Log::info('FILE DEBUG', [
+                    'name' => $file->getClientOriginalName(),
+                    'size' => $file->getSize(),
+                    'mime' => $file->getMimeType(),
+                    'isValid' => $file->isValid(),
+                    'error' => $file->getError(),
+                    'errorMessage' => $file->getErrorMessage(),
+                ]);
+            } else {
+                \Log::info('NO FILE DETECTED');
+            }
+
             $validated = $request->validate([
                 'full_name' => ['required', 'string', 'max:255'],
                 'phone_number' => ['required', 'string', 'max:100'],
                 'email' => ['nullable', 'email', 'max:255'],
                 'calculating_information' => ['required', 'string'],
                 'comment' => ['nullable', 'string', 'max:5000'],
-                'file' => ['nullable', 'file','max:51200']
+                'file' => ['nullable', 'file', 'max:10240'],
             ]);
 
             $filePath = null;
@@ -421,14 +444,6 @@ class ApiController extends Controller
                 'is_viewed' => false,
             ]);
 
-            try {
-                $contactUs = AboutUs::first();
-                $toEmail = $contactUs->email ? $contactUs->email :"ironindustries.am@gmail.com";
-                Mail::to($toEmail)->send(new NewPreorderMail($preorder));
-            } catch (\Throwable $mailException) {
-                \Log::error('Preorder mail send error: ' . $mailException->getMessage());
-            }
-
             return response()->json([
                 'data' => $preorder,
                 'message' => 'Preorder created successfully',
@@ -443,11 +458,12 @@ class ApiController extends Controller
                 'errors' => $e->errors(),
             ], 422);
         } catch (\Throwable $e) {
+            \Log::error('STORE PREORDER ERROR: '.$e->getMessage());
+
             return response()->json([
                 'data' => $e->getMessage(),
                 'message' => 'Server Error',
                 'error' => 'Server Error',
             ], 500);
         }
-    }
-}
+    }}
