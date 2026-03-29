@@ -402,7 +402,7 @@ class ApiController extends Controller
                 'email' => ['nullable', 'email', 'max:255'],
                 'calculating_information' => ['required', 'string'],
                 'comment' => ['nullable', 'string', 'max:5000'],
-                'file' => ['nullable', 'file', 'mimetypes:image/vnd.dxf,application/dxf,application/octet-stream', 'max:51200']
+                'file' => ['nullable', 'file','max:51200']
             ]);
 
             $filePath = null;
