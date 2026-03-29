@@ -401,46 +401,87 @@ class ApiController extends Controller
                 'content_length' => $request->server('CONTENT_LENGTH'),
             ]);
 
-            \Log::info('REQUEST DATA', $request->except('file'));
+            \Log::info('REQUEST DATA', $request->except(['file', 'file_base64']));
             \Log::info('ALL FILES', $request->allFiles());
 
-            $uploadedFile = $request->allFiles()['file'] ?? null;
-
-            if ($uploadedFile) {
-                \Log::info('RAW FILE DEBUG', [
-                    'name' => $uploadedFile->getClientOriginalName(),
-                    'client_mime' => $uploadedFile->getClientMimeType(),
-                    'mime' => $uploadedFile->getMimeType(),
-                    'size' => $uploadedFile->getSize(),
-                    'is_valid' => $uploadedFile->isValid(),
-                    'error' => $uploadedFile->getError(),
-                    'error_message' => $uploadedFile->getErrorMessage(),
-                    'tmp_path' => $uploadedFile->getPathname(),
-                ]);
-            } else {
-                \Log::info('RAW FILE DEBUG', ['file' => 'not found']);
-            }
-
+            // 🔹 Validation
             $validated = $request->validate([
                 'full_name' => ['required', 'string', 'max:255'],
                 'phone_number' => ['required', 'string', 'max:100'],
                 'email' => ['nullable', 'email', 'max:255'],
                 'calculating_information' => ['required', 'string'],
                 'comment' => ['nullable', 'string', 'max:5000'],
+
+                // file upload
                 'file' => ['nullable', 'file', 'max:10240'],
+
+                // base64 support
+                'file_base64' => ['nullable', 'string'],
+                'file_name' => ['nullable', 'string'],
             ]);
 
             $filePath = null;
 
+            // =========================
+            // 🔹 1. Handle normal upload
+            // =========================
+            $uploadedFile = $request->file('file');
+
             if ($uploadedFile && $uploadedFile->isValid()) {
-                $filePath = $uploadedFile->storeAs(
-                    'preorders',
-                    time() . '_' . preg_replace('/[^A-Za-z0-9\.\-_]/', '_', $uploadedFile->getClientOriginalName()),
-                    'public'
-                );
+                \Log::info('UPLOAD FILE DEBUG', [
+                    'name' => $uploadedFile->getClientOriginalName(),
+                    'size' => $uploadedFile->getSize(),
+                    'mime' => $uploadedFile->getMimeType(),
+                ]);
+
+                $safeName = time() . '_' . preg_replace(
+                        '/[^A-Za-z0-9.\-_]/',
+                        '_',
+                        $uploadedFile->getClientOriginalName()
+                    );
+
+                $filePath = $uploadedFile->storeAs('preorders', $safeName, 'public');
             }
 
+            // =========================
+            // 🔹 2. Handle base64 upload (fallback)
+            // =========================
+            elseif (!empty($validated['file_base64'])) {
 
+                \Log::info('BASE64 FILE DETECTED');
+
+                $base64 = $validated['file_base64'];
+
+                // remove prefix (data:...;base64,)
+                if (preg_match('/^data:(.*);base64,/', $base64)) {
+                    $base64 = substr($base64, strpos($base64, ',') + 1);
+                }
+
+                $fileData = base64_decode($base64);
+
+                if ($fileData === false) {
+                    throw new \Exception('Invalid base64 file');
+                }
+
+                // file name
+                $originalName = $validated['file_name'] ?? ('file_' . time() . '.dxf');
+
+                $safeName = time() . '_' . preg_replace(
+                        '/[^A-Za-z0-9.\-_]/',
+                        '_',
+                        $originalName
+                    );
+
+                $path = 'preorders/' . $safeName;
+
+                \Storage::disk('public')->put($path, $fileData);
+
+                $filePath = $path;
+            }
+
+            // =========================
+            // 🔹 3. Save preorder
+            // =========================
             $preorder = Preorder::create([
                 'full_name' => $validated['full_name'],
                 'phone_number' => $validated['phone_number'],
@@ -451,9 +492,13 @@ class ApiController extends Controller
                 'is_viewed' => false,
             ]);
 
+            // =========================
+            // 🔹 4. Send email
+            // =========================
             try {
                 $contactUs = AboutUs::first();
-                $toEmail = $contactUs->email ? $contactUs->email :"ironindustries.am@gmail.com";
+                $toEmail = $contactUs->email ?: "ironindustries.am@gmail.com";
+
                 Mail::to($toEmail)->send(new NewPreorderMail($preorder));
             } catch (\Throwable $mailException) {
                 \Log::error('Preorder mail send error: ' . $mailException->getMessage());
@@ -476,9 +521,9 @@ class ApiController extends Controller
             \Log::error('STORE PREORDER ERROR: ' . $e->getMessage());
 
             return response()->json([
-                'data' => $e->getMessage(),
+                'data' => null,
                 'message' => 'Server Error',
-                'error' => 'Server Error',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
