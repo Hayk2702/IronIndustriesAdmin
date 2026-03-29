@@ -34,7 +34,7 @@ class ApiController extends Controller
     {
         try {
 
-            $data = AboutUs::select("address", "phone", "lat", "lng", "working_hours", "facebook", "instagram", "linkedin", "telegram", "viber", "whatsapp")->first();
+            $data = AboutUs::select("address","email", "phone", "lat", "lng", "working_hours", "facebook", "instagram", "linkedin", "telegram", "viber", "whatsapp")->first();
             return Response::json(["data" => $data, "error" => ""]);
         } catch (\Exception $e) {
             return Response::json(["data" => null, "error" => "Error Code 400"], 400);
@@ -350,7 +350,9 @@ class ApiController extends Controller
                 'file' => ['nullable', 'file', 'max:10240', 'mimes:jpg,jpeg,png,pdf,doc,docx,txt'],
             ]);
 
-            $toEmail = "ironindustries.am@gmail.com";
+            $contactUs = AboutUs::first();
+
+            $toEmail = $contactUs->email ? $contactUs->email :"ironindustries.am@gmail.com";
 
             if (!$toEmail) {
                 return response()->json([
