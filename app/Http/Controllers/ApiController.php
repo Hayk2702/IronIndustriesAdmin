@@ -35,7 +35,7 @@ class ApiController extends Controller
     {
         try {
 
-            $data = AboutUs::select("address","email", "phone", "lat", "lng", "working_hours", "facebook", "instagram", "linkedin", "telegram", "viber", "whatsapp")->first();
+            $data = AboutUs::select("address", "email", "phone", "lat", "lng", "working_hours", "facebook", "instagram", "linkedin", "telegram", "viber", "whatsapp")->first();
             return Response::json(["data" => $data, "error" => ""]);
         } catch (\Exception $e) {
             return Response::json(["data" => null, "error" => "Error Code 400"], 400);
@@ -81,11 +81,11 @@ class ApiController extends Controller
                 ]);
             }
 
-        $services = $query
-            ->orderByRaw("CASE WHEN position IS NULL THEN 1 ELSE 0 END ASC")
-            ->orderBy("position", "asc")
-            ->orderBy('id', 'desc')
-            ->get();
+            $services = $query
+                ->orderByRaw("CASE WHEN position IS NULL THEN 1 ELSE 0 END ASC")
+                ->orderBy("position", "asc")
+                ->orderBy('id', 'desc')
+                ->get();
 
             return response()->json([
                 'data' => $services,
@@ -242,103 +242,103 @@ class ApiController extends Controller
     }
 
     public function prices(Request $request)
-{
-    try {
-        $query = MaterialPrice::select([
-            'id',
-            'material_name',
-            'cut_cost',
+    {
+        try {
+            $query = MaterialPrice::select([
+                'id',
+                'material_name',
+                'cut_cost',
 //            'material_cost_per_kg',
-            'density_kg_m2',
-            'bend_price',
-            'entity_price',
-            'created_at',
-            'updated_at',
-            'position',
-        ])->with([
-            'thicknesses' => function ($q) {
-                $q->select([
-                    'id',
-                    'material_price_id',
-                    'thickness_mm',
-                ])->orderBy('thickness_mm', 'asc');
-            }
-        ]);
+                'density_kg_m2',
+                'bend_price',
+                'entity_price',
+                'created_at',
+                'updated_at',
+                'position',
+            ])->with([
+                'thicknesses' => function ($q) {
+                    $q->select([
+                        'id',
+                        'material_price_id',
+                        'thickness_mm',
+                    ])->orderBy('thickness_mm', 'asc');
+                }
+            ]);
 
-        // single item by id
-        if ($request->filled('id')) {
-            $item = $query->find((int)$request->id);
+            // single item by id
+            if ($request->filled('id')) {
+                $item = $query->find((int)$request->id);
 
-            if (!$item) {
+                if (!$item) {
+                    return response()->json([
+                        'data' => null,
+                        'error' => 'Price not found'
+                    ], 404);
+                }
+
                 return response()->json([
-                    'data' => null,
-                    'error' => 'Price not found'
-                ], 404);
+                    'data' => $item,
+                    'error' => ''
+                ]);
             }
+
+            // FILTERS
+            if ($request->filled('material_name')) {
+                $query->where('material_name', 'LIKE', '%' . trim($request->material_name) . '%');
+            }
+
+            // numeric range helpers
+            $applyMinMax = function ($field, $minKey, $maxKey) use ($request, $query) {
+                if ($request->filled($minKey)) {
+                    $query->where($field, '>=', (float)$request->input($minKey));
+                }
+                if ($request->filled($maxKey)) {
+                    $query->where($field, '<=', (float)$request->input($maxKey));
+                }
+            };
+
+            $applyMinMax('cut_cost', 'min_cut_cost', 'max_cut_cost');
+//        $applyMinMax('material_cost_per_kg', 'min_cost_per_kg', 'max_cost_per_kg');
+            $applyMinMax('density_kg_m2', 'min_density', 'max_density');
+            $applyMinMax('bend_price', 'min_bend_price', 'max_bend_price');
+
+            // filter by thickness (exact)
+            if ($request->filled('thickness')) {
+                $th = (float)str_replace(',', '.', $request->thickness);
+
+                $query->whereHas('thicknesses', function ($q) use ($th) {
+                    $q->where('thickness_mm', $th);
+                });
+            }
+
+            // pagination like your products
+            if ($request->filled('offset')) {
+                $query->offset((int)$request->offset);
+            }
+
+            if ($request->filled('limit')) {
+                $query->limit((int)$request->limit);
+            }
+
+            $items = $query
+                ->orderByRaw('CASE WHEN position IS NULL THEN 1 ELSE 0 END ASC')
+                ->orderBy('position', 'asc')
+                ->orderBy('id', 'desc')
+                ->get();
 
             return response()->json([
-                'data' => $item,
+                'data' => $items,
                 'error' => ''
             ]);
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'data' => null,
+                'error' => 'Server Error',
+                'error2' => $e->getMessage(),
+            ], 500);
         }
-
-        // FILTERS
-        if ($request->filled('material_name')) {
-            $query->where('material_name', 'LIKE', '%' . trim($request->material_name) . '%');
-        }
-
-        // numeric range helpers
-        $applyMinMax = function ($field, $minKey, $maxKey) use ($request, $query) {
-            if ($request->filled($minKey)) {
-                $query->where($field, '>=', (float)$request->input($minKey));
-            }
-            if ($request->filled($maxKey)) {
-                $query->where($field, '<=', (float)$request->input($maxKey));
-            }
-        };
-
-        $applyMinMax('cut_cost', 'min_cut_cost', 'max_cut_cost');
-//        $applyMinMax('material_cost_per_kg', 'min_cost_per_kg', 'max_cost_per_kg');
-        $applyMinMax('density_kg_m2', 'min_density', 'max_density');
-        $applyMinMax('bend_price', 'min_bend_price', 'max_bend_price');
-
-        // filter by thickness (exact)
-        if ($request->filled('thickness')) {
-            $th = (float) str_replace(',', '.', $request->thickness);
-
-            $query->whereHas('thicknesses', function ($q) use ($th) {
-                $q->where('thickness_mm', $th);
-            });
-        }
-
-        // pagination like your products
-        if ($request->filled('offset')) {
-            $query->offset((int)$request->offset);
-        }
-
-        if ($request->filled('limit')) {
-            $query->limit((int)$request->limit);
-        }
-
-        $items = $query
-            ->orderByRaw('CASE WHEN position IS NULL THEN 1 ELSE 0 END ASC')
-            ->orderBy('position', 'asc')
-            ->orderBy('id', 'desc')
-            ->get();
-
-        return response()->json([
-            'data' => $items,
-            'error' => ''
-        ]);
-
-    } catch (\Throwable $e) {
-        return response()->json([
-            'data' => null,
-            'error' => 'Server Error',
-            'error2' => $e->getMessage(),
-        ], 500);
     }
-}
 
     public function sendMessage(Request $request)
     {
@@ -353,7 +353,7 @@ class ApiController extends Controller
 
             $contactUs = AboutUs::first();
 
-            $toEmail = $contactUs->email ? $contactUs->email :"ironindustries.am@gmail.com";
+            $toEmail = $contactUs->email ? $contactUs->email : "ironindustries.am@gmail.com";
 
             if (!$toEmail) {
                 return response()->json([
@@ -396,74 +396,32 @@ class ApiController extends Controller
     public function storePreorder(Request $request)
     {
         try {
-            \Log::info('CONTENT TYPE', [
-                'content_type' => $request->header('Content-Type'),
-                'content_length' => $request->server('CONTENT_LENGTH'),
-            ]);
+            $uploadedFile = $request->allFiles()['file'] ?? null;
 
-            \Log::info('REQUEST DATA', $request->except('file'));
-            \Log::info('ALL FILES', $request->allFiles());
-
-            if ($request->hasFile('file')) {
-                $file = $request->file('file');
-
-                \Log::info('FILE DEBUG', [
-                    'name' => $file->getClientOriginalName(),
-                    'size' => $file->getSize(),
-                    'mime' => $file->getMimeType(),
-                    'isValid' => $file->isValid(),
-                    'error' => $file->getError(),
-                    'errorMessage' => $file->getErrorMessage(),
+            if ($uploadedFile) {
+                \Log::info('RAW FILE DEBUG', [
+                    'original_name' => $uploadedFile->getClientOriginalName(),
+                    'client_mime' => $uploadedFile->getClientMimeType(),
+                    'mime' => $uploadedFile->getMimeType(),
+                    'size' => $uploadedFile->getSize(),
+                    'error' => $uploadedFile->getError(),
+                    'error_message' => $uploadedFile->getErrorMessage(),
+                    'is_valid' => $uploadedFile->isValid(),
+                    'tmp_path' => $uploadedFile->getPathname(),
                 ]);
             } else {
-                \Log::info('NO FILE DETECTED');
+                \Log::info('RAW FILE DEBUG', ['file' => 'not found in allFiles']);
             }
 
-            $validated = $request->validate([
-                'full_name' => ['required', 'string', 'max:255'],
-                'phone_number' => ['required', 'string', 'max:100'],
-                'email' => ['nullable', 'email', 'max:255'],
-                'calculating_information' => ['required', 'string'],
-                'comment' => ['nullable', 'string', 'max:5000'],
-                'file' => ['nullable', 'file', 'max:10240'],
-            ]);
-
-            $filePath = null;
-
-            if ($request->hasFile('file')) {
-                $filePath = $request->file('file')->store('preorders', 'public');
-            }
-
-            $preorder = Preorder::create([
-                'full_name' => $validated['full_name'],
-                'phone_number' => $validated['phone_number'],
-                'email' => $validated['email'] ?? null,
-                'calculating_information' => $validated['calculating_information'],
-                'comment' => $validated['comment'] ?? null,
-                'file_path' => $filePath,
-                'is_viewed' => false,
-            ]);
-
             return response()->json([
-                'data' => $preorder,
-                'message' => 'Preorder created successfully',
-                'error' => '',
-            ], 201);
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'data' => null,
-                'message' => 'Validation error',
-                'error' => 'Validation error',
-                'errors' => $e->errors(),
-            ], 422);
+                'file_exists' => (bool)$uploadedFile,
+                'is_valid' => $uploadedFile ? $uploadedFile->isValid() : false,
+                'error' => $uploadedFile ? $uploadedFile->getError() : null,
+                'error_message' => $uploadedFile ? $uploadedFile->getErrorMessage() : null,
+            ]);
         } catch (\Throwable $e) {
-            \Log::error('STORE PREORDER ERROR: '.$e->getMessage());
-
-            return response()->json([
-                'data' => $e->getMessage(),
-                'message' => 'Server Error',
-                'error' => 'Server Error',
-            ], 500);
+            \Log::error($e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-    }}
+    }
+}
