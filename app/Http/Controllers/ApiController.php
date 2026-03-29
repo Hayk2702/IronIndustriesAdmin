@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ContactMessageMail;
+use App\Mail\NewPreorderMail;
 use App\Models\AboutCompany;
 use App\Models\AboutUs;
 use App\Models\Category;
@@ -401,7 +402,14 @@ class ApiController extends Controller
                 'email' => ['nullable', 'email', 'max:255'],
                 'calculating_information' => ['required', 'string'],
                 'comment' => ['nullable', 'string', 'max:5000'],
+                'file' => ['nullable', 'file', 'max:10240'], // 10MB
             ]);
+
+            $filePath = null;
+
+            if ($request->hasFile('file')) {
+                $filePath = $request->file('file')->store('preorders', 'public');
+            }
 
             $preorder = Preorder::create([
                 'full_name' => $validated['full_name'],
@@ -409,8 +417,17 @@ class ApiController extends Controller
                 'email' => $validated['email'] ?? null,
                 'calculating_information' => $validated['calculating_information'],
                 'comment' => $validated['comment'] ?? null,
+                'file_path' => $filePath,
                 'is_viewed' => false,
             ]);
+
+            try {
+                $contactUs = AboutUs::first();
+                $toEmail = $contactUs->email ? $contactUs->email :"ironindustries.am@gmail.com";
+                Mail::to($toEmail)->send(new NewPreorderMail($preorder));
+            } catch (\Throwable $mailException) {
+                \Log::error('Preorder mail send error: ' . $mailException->getMessage());
+            }
 
             return response()->json([
                 'data' => $preorder,

@@ -15,6 +15,7 @@ class Preorder extends Model
         'email',
         'calculating_information',
         'comment',
+        'file_path',
         'is_viewed',
     ];
 
